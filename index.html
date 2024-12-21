@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Options</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle, #ffffff 1px, transparent 1px),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><path d="M0,1080 L960,0 L1920,1080 Z" fill="%23ffffff" opacity="0.3"/></svg>'),
+                linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+            background-size: 50px 50px, 100% 100%, 100% 100%;
+            animation: snowfall 20s linear infinite;
+            position: relative;
+        }
+
+        .content {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #ff0000;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .key-box {
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .key {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            display: none; /* Hide the key initially */
+        }
+
+        .generate-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(to right, #ff0000, #8b0000);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        @keyframes snowfall {
+            0% {
+                background-position: 0 0, 0 0, 0 0;
+            }
+            100% {
+                background-position: 500px 500px, 0 0, 0 0;
+            }
+        }
+
+        .top-left-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ff0000;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .bottom-right-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .expired-message {
+            color: #ff0000;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-left-text">DeepX Key System</div>
+        <div class="content">
+            <h1>Get Your Key</h1>
+            <div class="key-box">
+                <div class="key" id="keyDisplay">DeepX_XXXXXXXX</div>
+                <button class="generate-btn" id="generateBtn">Get Key</button>
+                <div class="expired-message" id="expiredMessage" style="display: none;">This key is expired.</div>
+                <button class="generate-btn" id="regenerateBtn" style="display: none;">Generate a New One</button>
+            </div>
+        </div>
+        <div class="bottom-right-text" id="counterText">0/1</div>
+    </div>
+
+    <script>
+        const keyDisplay = document.getElementById('keyDisplay');
+        const generateBtn = document.getElementById('generateBtn');
+        const regenerateBtn = document.getElementById('regenerateBtn');
+        const expiredMessage = document.getElementById('expiredMessage');
+        const counterText = document.getElementById('counterText');
+
+        let currentKey = localStorage.getItem('key') || '';
+        let keyGenerationTime = localStorage.getItem('keyGenerationTime') || 0;
+
+        // Display the generated key only after it is generated
+        function updateKeyDisplay() {
+            if (currentKey) {
+                keyDisplay.style.display = 'block'; // Show the key
+                keyDisplay.textContent = currentKey;
+                expiredMessage.style.display = 'none';
+                regenerateBtn.style.display = 'none';
+            } else {
+                keyDisplay.style.display = 'none'; // Keep the key hidden initially
+            }
+        }
+
+        // Handle Get Key button click
+        generateBtn.addEventListener('click', () => {
+            const currentTime = Date.now();
+            const timeElapsed = currentTime - keyGenerationTime;
+
+            if (currentKey && timeElapsed < 86400000) {
+                // Key exists and hasn't expired
+                alert('You already have a key! Please wait until the key expires.');
+            } else {
+                // Generate a new key every 24 hours
+                currentKey = 'DeepX_' + Math.random().toString(36).substr(2, 8).toUpperCase();
+                keyGenerationTime = currentTime;
+                localStorage.setItem('key', currentKey);
+                localStorage.setItem('keyGenerationTime', keyGenerationTime);
+                updateKeyDisplay();
+                counterText.textContent = '1/1'; // Update to 1/1 after key generation
+            }
+        });
+
+        // Handle Regenerate Key button click
+        regenerateBtn.addEventListener('click', () => {
+            const currentTime = Date.now();
+            const timeElapsed = currentTime - keyGenerationTime;
+
+            if (timeElapsed >= 86400000) { // If more than 24 hours
+                currentKey = 'DeepX_' + Math.random().toString(36).substr(2, 8).toUpperCase();
+                keyGenerationTime = currentTime;
+                localStorage.setItem('key', currentKey);
+                localStorage.setItem('keyGenerationTime', keyGenerationTime);
+                updateKeyDisplay();
+            }
+        });
+
+        // Check if key is expired
+        setInterval(() => {
+            const currentTime = Date.now();
+            const timeElapsed = currentTime - keyGenerationTime;
+
+            if (timeElapsed >= 86400000 && currentKey) {
+                expiredMessage.style.display = 'block';
+                regenerateBtn.style.display = 'inline-block';
+            }
+        }, 1000);
+
+        // Initialize key display
+        updateKeyDisplay();
+    </script>
+</body>
+</html>
